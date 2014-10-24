@@ -29,6 +29,19 @@ module Typedeaf
 
       return super
     end
+
+    def positional_validation!(params, args)
+      if params.size != args.size
+        raise ArgumentError, "wrong number of arguments (#{args.size} for #{params.size}"
+      end
+    end
+
+    def type_validation!(expected, param, value)
+      unless value.is_a?(expected)
+        raise InvalidTypeException,
+            "Expected `#{param}` to be a kind of #{expected} but was #{value.class}"
+      end
+    end
   end
 
   module ClassMethods
@@ -39,11 +52,16 @@ module Typedeaf
       end
 
       define_method(method_sym) do |*args|
+        positional_validation!(params.keys, args)
+
         param_indices = {}
-        params.each.with_index do |(key, value), index|
-          param_indices[key] = args[index]
+        params.each.with_index do |(param, type), index|
+          value = args[index]
+          type_validation!(type, param, value)
+          param_indices[param] = value
         end
         __typedeaf_varstack__ << [params, param_indices]
+
         begin
           instance_exec(*args, &block)
         ensure

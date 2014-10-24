@@ -26,21 +26,21 @@ describe Typedeaf do
     end
 
 
-    #context 'defining a method with no arguments' do
-    #  before :each do
-    #    klass.class_eval do
-    #      tdef :log do
-    #        'hello rspec'
-    #      end
-    #    end
-    #  end
+    context 'defining a method with no arguments' do
+      before :each do
+        klass.class_eval do
+          define :log do
+            'hello rspec'
+          end
+        end
+      end
 
-    #  it { should respond_to :log }
+      it { should respond_to :log }
 
-    #  it 'should return the right value when invoked' do
-    #    expect(instance.log).to eql('hello rspec')
-    #  end
-    #end
+      it 'should return the right value when invoked' do
+        expect(instance.log).to eql('hello rspec')
+      end
+    end
 
 
     context 'defining a method with arguments' do
@@ -54,8 +54,19 @@ describe Typedeaf do
 
       it { should respond_to :log }
       it 'should use the arguments to generate a result' do
-        puts "instance: #{instance.object_id}"
         expect(instance.log('world')).to eql('hello world')
+      end
+
+      it 'should raise when not enough args are passed' do
+        expect {
+          instance.log
+        }.to raise_error(ArgumentError)
+      end
+
+      it 'should raise when an incorrectly typed argument is passed' do
+        expect {
+          instance.log 4
+        }.to raise_error(Typedeaf::InvalidTypeException)
       end
     end
   end

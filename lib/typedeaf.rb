@@ -1,9 +1,6 @@
 require 'typedeaf/errors'
 require "typedeaf/version"
 
-require 'continuation'
-require 'facets/binding'
-
 module Typedeaf
   def self.included(base)
     base.send(:include, InstanceMethods)

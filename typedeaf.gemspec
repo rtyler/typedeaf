@@ -8,9 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = Typedeaf::VERSION
   spec.authors       = ["R. Tyler Croy"]
   spec.email         = ["tyler@monkeypox.org"]
-  spec.summary       = %q{TODO: Write a short summary. Required.}
-  spec.description   = %q{TODO: Write a longer description. Optional.}
-  spec.homepage      = ""
+  spec.summary       = %q{Typedeaf is a gem to help add some type-checking to method declarations in Ruby}
+  spec.homepage      = "https://github.com/rtyler/typedeaf"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")

@@ -7,5 +7,5 @@ group :development do
   gem 'rake'
   gem 'rspec'
   gem 'pry'
-  gem 'debugger-pry', :platform => :mri
+  gem 'debugger-pry', :platform => :mri_19
 end

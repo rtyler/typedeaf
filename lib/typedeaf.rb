@@ -61,7 +61,19 @@ module Typedeaf
     end
   end
 
+  class DefaultArgument
+    attr_reader :value, :types
+    def initialize(value, *types)
+      @value = value
+      @types = types
+    end
+  end
+
   module ClassMethods
+    def default(value, *types)
+      return DefaultArgument.new(value, *types)
+    end
+
     def define(method_sym, params={}, &block)
       if block.nil?
         raise MissingMethodException,
@@ -69,6 +81,21 @@ module Typedeaf
       end
 
       define_method(method_sym) do |*args|
+        if params.keys.size > args.size
+          # Check to see if we have any defaulted parameters
+          params.each do |name, argument|
+            # Unless it's a special kind of argument, skip it
+            next unless argument.is_a? DefaultArgument
+
+            params[name] = argument.types
+            args << argument.value
+          end
+        end
+
+        # Validate that we have the right number of positional arguments
+        #
+        # This is only really needed to make sure we're behaving the same
+        # was as natively defined method would
         positional_validation!(params.keys, args)
 
         # We need to walk through the list of parameters and their types and

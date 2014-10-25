@@ -42,8 +42,7 @@ describe Typedeaf do
       end
     end
 
-
-    context 'defining a method with arguments' do
+    context 'defining a method with positional arguments' do
       before :each do
         klass.class_eval do
           define :log, message: String do
@@ -67,6 +66,37 @@ describe Typedeaf do
         expect {
           instance.log 4
         }.to raise_error(Typedeaf::InvalidTypeException)
+      end
+    end
+
+    context 'defining a method with multiple acceptable types' do
+      before :each do
+        klass.class_eval do
+          define :log, message: [String, Symbol] do
+            "hello #{message}"
+          end
+        end
+      end
+
+      it { should respond_to :log }
+      it 'should work for different types' do
+        expect(instance.log(:world)).to eql('hello world')
+        expect(instance.log('world')).to eql('hello world')
+      end
+    end
+
+    context 'defining a method with default arguments' do
+      before :each do
+        klass.class_eval do
+          define :log, message: String, level: default(:debug, Symbol) do
+            [message, level].map(&:to_s).join(' ')
+          end
+        end
+      end
+
+      it { should respond_to :log }
+      it 'a default call should use the arguments to create a result' do
+        expect(instance.log('hello')).to eql('hello debug')
       end
     end
   end

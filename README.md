@@ -1,6 +1,11 @@
 # Typedeaf
 
+[![Build Status](https://travis-ci.org/rtyler/typedeaf.svg)](https://travis-ci.org/rtyler/typedeaf)
+
 Typedeaf is a gem to help add some type-checking to method declarations in Ruby
+
+
+[RDoc](http://www.rubydoc.info/github/rtyler/typedeaf/master/frames)
 
 
 ## Usage

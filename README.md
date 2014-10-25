@@ -61,6 +61,34 @@ from /usr/home/tyler/source/github/ruby/typedeaf/lib/typedeaf.rb:58:in `type_val
 
 ```
 
+#### Passing blocks to Typedeaf code
+
+```ruby
+require 'typedeaf'
+
+class Logger
+  include Typedeaf
+
+  define :log, message: String, block: Proc do
+    puts "Loggin: #{message}"
+    block.call
+  end
+end
+
+Logger.new.log('hello world') do
+  puts 'called back!'
+end
+```
+
+## Caveats
+
+Here's a list of caveats, or things that don't quite work, with Typedeaf:
+
+* Typedeaf methods cannot use `return` or `break`, since they're technically
+  Ruby blocks and must follow the rules defined for block behaviors
+* `yield` will not properly work, if you want to pass blocks into your
+  Typedeafed method, see the above usage example
+
 
 ## Installation
 

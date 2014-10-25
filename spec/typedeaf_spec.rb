@@ -12,7 +12,7 @@ describe Typedeaf do
     it { should respond_to :define }
   end
 
-  context 'defining typedeaf instance methods' do
+  context 'defining instance methods' do
     subject(:instance) { klass.new }
 
     context 'defining a method with an invalid block' do
@@ -117,6 +117,29 @@ describe Typedeaf do
       it 'should generate the right recursive behavior' do
         expect(instance.log(['tom', 'jerry'])).to eql(['hello tom',
                                                        'hello jerry'])
+      end
+    end
+
+    context 'defining a method which accepts a block' do
+      before :each do
+        klass.class_eval do
+          define :log, message: String, block: Proc do
+            block.call
+            'hello proc'
+          end
+        end
+      end
+
+      it { should respond_to :log }
+
+      it 'should return and yield the right thing' do
+        called = false
+        result = nil
+        result = instance.log('hello') do
+          called = true
+        end
+        expect(result).to eql('hello proc')
+        expect(called).to be_truthy
       end
     end
   end

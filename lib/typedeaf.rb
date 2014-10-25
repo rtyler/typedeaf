@@ -95,7 +95,13 @@ module Typedeaf
             "You must provide a block for the #{method_sym} body"
       end
 
-      define_method(method_sym) do |*args|
+      define_method(method_sym) do |*args, &blk|
+        # If we've been given a block, and it's in the params list properly,
+        # then we should just add it to the args as a "positional" argument
+        if blk && params[:block]
+          args << blk
+        end
+
         if params.keys.size > args.size
           # Check to see if we have any defaulted parameters
           params.each do |name, argument|
@@ -127,7 +133,7 @@ module Typedeaf
         __typedeaf_varstack__ << [params, param_indices]
 
         begin
-          instance_exec(*args, &block)
+          instance_exec(&block)
         ensure
           __typedeaf_varstack__.pop
         end

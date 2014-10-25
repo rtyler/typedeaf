@@ -1,3 +1,5 @@
+require 'concurrent'
+
 require 'typedeaf/arguments'
 require 'typedeaf/errors'
 
@@ -5,6 +7,18 @@ module Typedeaf
   module ClassMethods
     def default(value, *types)
       return Typedeaf::Arguments::DefaultArgument.new(value, *types)
+    end
+
+    def promise(method_sym, params={}, &block)
+      define(method_sym, params) do
+        Concurrent::Promise.new { block.call }.execute
+      end
+    end
+
+    def future(method_sym, params={}, &block)
+      define(method_sym, params) do
+        Concurrent::Future.new { block.call }.execute
+      end
     end
 
     def define(method_sym, params={}, &block)

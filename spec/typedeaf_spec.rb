@@ -25,7 +25,6 @@ describe Typedeaf do
       end
     end
 
-
     context 'defining a method with no arguments' do
       before :each do
         klass.class_eval do
@@ -140,6 +139,46 @@ describe Typedeaf do
         end
         expect(result).to eql('hello proc')
         expect(called).to be_truthy
+      end
+    end
+
+    context 'defining a future method' do
+      before :each do
+        klass.class_eval do
+          future :log, message: String do
+            'hello'
+          end
+        end
+      end
+
+      it { should respond_to :log }
+
+      context 'the method result' do
+        let(:msg) { 'hello' }
+        subject(:result) { instance.log(msg) }
+
+        it { should be_kind_of Concurrent::Future }
+        its(:value) { should eql(msg) }
+      end
+    end
+
+    context 'defining a promise method' do
+      before :each do
+        klass.class_eval do
+          promise :log, message: String do
+            'hello'
+          end
+        end
+      end
+
+      it { should respond_to :log }
+
+      context 'the method result' do
+        let(:msg) { 'hello' }
+        subject(:result) { instance.log(msg) }
+
+        it { should be_kind_of Concurrent::Promise }
+        its(:value) { should eql(msg) }
       end
     end
   end

@@ -6,6 +6,7 @@ gemspec
 group :development do
   gem 'rake'
   gem 'rspec'
+  gem 'rspec-its'
   gem 'pry'
   gem 'debugger-pry', :platform => :mri_19
 end

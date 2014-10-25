@@ -100,7 +100,6 @@ describe Typedeaf do
       end
     end
 
-
     context 'defining a recursing method' do
       before :each do
         klass.class_eval do

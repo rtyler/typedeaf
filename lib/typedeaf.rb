@@ -1,3 +1,5 @@
+require 'thread'
+
 require 'typedeaf/errors'
 require "typedeaf/version"
 
@@ -8,11 +10,24 @@ module Typedeaf
   end
 
   module InstanceMethods
+    # Access the current thread's and instance's varstack
+    #
+    # Since we're inside of an object instance already, we should make sure
+    # that we can isolate the method's varstack for our current thread and
+    # instance together.
+    #
+    # Instaed of using a thread local by itself, which would not provide the
+    # cross-object isolation, and instead of using just an instance variable,
+    # which would require thread-safety locks, serializing all calls into and
+    # out of the instance
+    #
+    # @return [Array] variable stack
     def __typedeaf_varstack__
-      if @__typedeaf_varstack__.nil?
-        @__typedeaf_varstack__ = []
+      varstack_id = "typedeaf_varstack_#{self.object_id}".to_sym
+      if Thread.current[varstack_id].nil?
+        Thread.current[varstack_id] = []
       end
-      return @__typedeaf_varstack__
+      return Thread.current[varstack_id]
     end
 
     def method_missing(sym, *args)

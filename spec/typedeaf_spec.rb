@@ -99,5 +99,26 @@ describe Typedeaf do
         expect(instance.log('hello')).to eql('hello debug')
       end
     end
+
+
+    context 'defining a recursing method' do
+      before :each do
+        klass.class_eval do
+          define :log, message: [String, Array] do
+            if message.is_a? Array
+              next message.map { |m| self.log(m) }
+            end
+            "hello #{message}"
+          end
+        end
+      end
+
+      it { should respond_to :log }
+
+      it 'should generate the right recursive behavior' do
+        expect(instance.log(['tom', 'jerry'])).to eql(['hello tom',
+                                                       'hello jerry'])
+      end
+    end
   end
 end

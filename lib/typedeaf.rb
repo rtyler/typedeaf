@@ -29,14 +29,34 @@ module Typedeaf
 
     def positional_validation!(params, args)
       if params.size != args.size
-        raise ArgumentError, "wrong number of arguments (#{args.size} for #{params.size}"
+        raise ArgumentError,
+          "wrong number of arguments (#{args.size} for #{params.size})"
       end
     end
 
-    def type_validation!(expected, param, value)
-      unless value.is_a?(expected)
+    # Determine whether the supplied value is an instance of the given class
+    #
+    # @param [Object] value
+    # @param [Class] type Any class
+    def __typedeaf_valid_type?(value, type)
+      return value.is_a? type
+    end
+
+    # Validated the expect
+    def type_validation!(param, value, types)
+      validated = false
+      if types.is_a? Array
+        types.each do |type|
+          validated = __typedeaf_valid_type? value, type
+          break if validated
+        end
+      else
+        validated = __typedeaf_valid_type? value, types
+      end
+
+      unless validated
         raise InvalidTypeException,
-            "Expected `#{param}` to be a kind of #{expected} but was #{value.class}"
+            "Expected `#{param}` to be a kind of #{types} but was #{value.class}"
       end
     end
   end
@@ -51,10 +71,15 @@ module Typedeaf
       define_method(method_sym) do |*args|
         positional_validation!(params.keys, args)
 
+        # We need to walk through the list of parameters and their types and
+        # perform type checking on each of them
         param_indices = {}
         params.each.with_index do |(param, type), index|
           value = args[index]
-          type_validation!(type, param, value)
+          type_validation!(param, value, type)
+          # Adding the index of this parameter's value to our Hash so we can
+          # properly fish it back out when the method_missing magic is being
+          # invoked from within the block
           param_indices[param] = value
         end
         __typedeaf_varstack__ << [params, param_indices]

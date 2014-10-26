@@ -21,11 +21,11 @@ module Typedeaf
         __typedeaf_handle_default_parameters(params, args)
         __typedeaf_validate_positionals(params, args)
 
+        stack_element =  [params, __typedeaf_validate_types(params, args)]
         primitive.new do
           # We're inserting into the varstack within the future to make sure
           # we're using the right thread+instance combination
-          __typedeaf_varstack__ << [params,
-                                    __typedeaf_validate_types(params, args)]
+          __typedeaf_varstack__ << stack_element
           begin
             instance_exec(&block)
           ensure

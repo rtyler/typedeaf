@@ -170,6 +170,14 @@ describe Typedeaf do
           expect(result.state).to eql(:fulfilled), "Failure: #{result.reason}"
         end
       end
+
+      context 'with the wrong parameter types' do
+        it 'should raise immediately' do
+          expect {
+            instance.log(:failboat)
+          }.to raise_error(Typedeaf::InvalidTypeException)
+        end
+      end
     end
 
     context 'defining a promise method' do

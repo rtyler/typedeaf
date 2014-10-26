@@ -41,6 +41,12 @@ module Typedeaf
       __typedeaf_validate_body_for(method_sym, block)
 
       define_method(method_sym) do |*args, &blk|
+        # Optimization, if we're a parameter-less method, just pass right
+        # through without any checks whatsoever
+        if params.empty?
+          return instance_exec(&block)
+        end
+
         __typedeaf_handle_nested_block(params, args, blk)
         __typedeaf_handle_default_parameters(params, args)
         __typedeaf_validate_positionals(params, args)

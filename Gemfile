@@ -9,4 +9,5 @@ group :development do
   gem 'rspec-its'
   gem 'pry'
   gem 'debugger-pry', :platform => :mri_19
+  gem 'benchmark-ips'
 end

@@ -1,0 +1,16 @@
+As of: af96558
+
+Calculating -------------------------------------
+     typedeaf method     12808 i/100ms
+       normal method     19336 i/100ms
+       a simple proc     18550 i/100ms
+-------------------------------------------------
+     typedeaf method   461399.4 (±11.7%) i/s -    2267016 in   5.001402s
+       normal method  1050875.4 (±15.6%) i/s -    5104704 in   5.008836s
+       a simple proc   912593.9 (±15.8%) i/s -    4433450 in   5.012059s
+
+Comparison:
+       normal method:  1050875.4 i/s
+       a simple proc:   912593.9 i/s - 1.15x slower
+     typedeaf method:   461399.4 i/s - 2.28x slower
+

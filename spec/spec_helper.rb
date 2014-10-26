@@ -5,5 +5,9 @@ require 'rspec'
 require 'rspec/its'
 
 unless RUBY_PLATFORM == 'java'
-  require 'debugger/pry'
+  begin
+    require 'debugger/pry'
+  rescue LoadError
+    puts 'Not loading debugger/pry'
+  end
 end

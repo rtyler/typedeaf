@@ -97,6 +97,12 @@ describe Typedeaf do
       it 'a default call should use the arguments to create a result' do
         expect(instance.log('hello')).to eql('hello debug')
       end
+
+      it 'should be callable multiple times in a row' do
+        3.times do
+          expect(instance.log('hello')).to eql('hello debug')
+        end
+      end
     end
 
     context 'defining a recursing method' do

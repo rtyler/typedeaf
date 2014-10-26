@@ -69,6 +69,13 @@ require 'typedeaf/errors'
     # Validate the expected types for a param
     def __typedeaf_validate_types_for(param, value, types)
       validated = false
+
+      # If we've received a DefaultArgument, we need to dig into it to get our
+      # types to check back out
+      if types.is_a? Typedeaf::Arguments::DefaultArgument
+        types = types.types
+      end
+
       if types.is_a? Array
         types.each do |type|
           validated = __typedeaf_valid_type? value, type
@@ -101,7 +108,6 @@ require 'typedeaf/errors'
         # Unless it's a special kind of argument, skip it
         next unless argument.is_a? Typedeaf::Arguments::DefaultArgument
 
-        parameters[name] = argument.types
         args << argument.value
       end
 

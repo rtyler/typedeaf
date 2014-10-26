@@ -5,13 +5,22 @@ require 'typedeaf/errors'
 
   module Typedeaf
     module InstanceMethods
-    def method_missing(sym, *args)
+    def method_missing(varname, *args)
       # We only want to peek at the stack if we have no args (i.e. not trying
       # to make a method call
-      if args.empty? && !(__typedeaf_varstack__.empty?)
-        params, values = __typedeaf_varstack__.last
-        # The top of our stack contains something that we want
-        return values[sym] if params[sym]
+      if args.empty?
+        element = __typedeaf_varstack__.last
+
+        # If our stack is empty then we'll get a nil element back, making sure
+        # we only call into __typedeaf_varstack__ once for the #method_missing
+        # invocation
+        unless element.nil?
+          method_name = element.first
+          # The top of our stack contains something that we want
+          if self.class.__typedeaf_method_parameters__[method_name][varname]
+            return element.last[varname]
+          end
+        end
       end
 
       return super
@@ -35,6 +44,7 @@ require 'typedeaf/errors'
       if @__typedeaf_varstack_id__.nil?
         @__typedeaf_varstack_id__ = "typedeaf_varstack_#{self.object_id}".to_sym
       end
+
       if Thread.current[@__typedeaf_varstack_id__].nil?
         Thread.current[@__typedeaf_varstack_id__] = []
       end
@@ -103,6 +113,8 @@ require 'typedeaf/errors'
     end
 
     def __typedeaf_handle_default_parameters(parameters, args)
+      # If both parameters and args are of equal size, then we don't have any
+      # defaulted parameters that we need to insert
       return unless parameters.size > args.size
 
       # Check to see if we have any defaulted parameters

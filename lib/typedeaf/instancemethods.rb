@@ -32,11 +32,13 @@ require 'typedeaf/errors'
     #
     # @return [Array] variable stack
     def __typedeaf_varstack__
-      varstack_id = "typedeaf_varstack_#{self.object_id}".to_sym
-      if Thread.current[varstack_id].nil?
-        Thread.current[varstack_id] = []
+      if @__typedeaf_varstack_id__.nil?
+        @__typedeaf_varstack_id__ = "typedeaf_varstack_#{self.object_id}".to_sym
       end
-      return Thread.current[varstack_id]
+      if Thread.current[@__typedeaf_varstack_id__].nil?
+        Thread.current[@__typedeaf_varstack_id__] = []
+      end
+      return Thread.current[@__typedeaf_varstack_id__]
     end
 
     # Determine whether the supplied value is an instance of the given class
@@ -101,7 +103,7 @@ require 'typedeaf/errors'
     end
 
     def __typedeaf_handle_default_parameters(parameters, args)
-      return unless parameters.keys.size > args.size
+      return unless parameters.size > args.size
 
       # Check to see if we have any defaulted parameters
       parameters.each do |name, argument|
@@ -119,9 +121,9 @@ require 'typedeaf/errors'
     # This is only really needed to make sure we're behaving the same
     # was as natively defined method would
     def __typedeaf_validate_positionals(parameters, args)
-      if parameters.keys.size != args.size
+      if parameters.size != args.size
         raise ArgumentError,
-          "wrong number of arguments (#{args.size} for #{parameters.keys.size})"
+          "wrong number of arguments (#{args.size} for #{parameters.size})"
       end
       return nil
     end

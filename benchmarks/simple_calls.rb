@@ -1,8 +1,4 @@
-require 'rubygems'
-
-$LOAD_PATH.unshift(File.expand_path(File.dirname(__FILE__) + '/../lib'))
-require 'typedeaf'
-require 'benchmark/ips'
+require_relative 'bench_helper'
 
 class Simple
   include Typedeaf
@@ -16,14 +12,13 @@ class Simple
 end
 
 s = Simple.new
-
-b = Proc.new do
+blk = Proc.new do
   rand + rand
 end
 
 Benchmark.ips do |x|
   x.report('typedeaf method') { s.typedeaf_computer }
   x.report('normal method') { s.method_computer }
-  x.report('a simple proc') { b.() }
+  x.report('a simple proc') { blk.() }
   x.compare!
 end

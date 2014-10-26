@@ -146,7 +146,7 @@ describe Typedeaf do
       before :each do
         klass.class_eval do
           future :log, message: String do
-            'hello'
+            message
           end
         end
       end
@@ -158,7 +158,11 @@ describe Typedeaf do
         subject(:result) { instance.log(msg) }
 
         it { should be_kind_of Concurrent::Future }
-        its(:value) { should eql(msg) }
+
+        it 'should successfully execute' do
+          expect(result.value).to eql msg
+          expect(result.state).to eql(:fulfilled), "Failure: #{result.reason}"
+        end
       end
     end
 
@@ -166,7 +170,7 @@ describe Typedeaf do
       before :each do
         klass.class_eval do
           promise :log, message: String do
-            'hello'
+            message
           end
         end
       end
@@ -178,7 +182,11 @@ describe Typedeaf do
         subject(:result) { instance.log(msg) }
 
         it { should be_kind_of Concurrent::Promise }
-        its(:value) { should eql(msg) }
+
+        it 'should successfully execute' do
+          expect(result.value).to eql msg
+          expect(result.state).to eql(:fulfilled), "Failure: #{result.reason}"
+        end
       end
     end
   end

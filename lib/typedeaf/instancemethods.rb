@@ -64,8 +64,10 @@ require 'typedeaf/errors'
       # We need to walk through the list of parameters and their types and
       # perform type checking on each of them
       parameter_indices = {}
-      parameters.each.with_index do |(param, types), index|
+      index = 0
+      parameters.each do |param, types|
         value = args[index]
+        index = index + 1
 
         __typedeaf_validate_types_for(param, value, types)
 

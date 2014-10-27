@@ -39,6 +39,7 @@ module Typedeaf
     end
 
     def define(method_sym, params={}, &block)
+      params = params.freeze
       __typedeaf_validate_body_for(method_sym, block)
       __typedeaf_method_parameters__[method_sym] = params
 

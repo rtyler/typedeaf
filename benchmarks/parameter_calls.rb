@@ -4,16 +4,16 @@ class Parametered
   include Typedeaf
 
   def method_with_params(buffer)
-    buffer.size
+    buffer.size + rand + rand
   end
 
   define :typedeaf_with_params, buffer: String do
-    buffer.size
+    buffer.size + rand + rand
   end
 end
 
 blk = Proc.new do |buffer|
-  buffer.size
+  buffer.size + rand + rand
 end
 
 p = Parametered.new

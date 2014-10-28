@@ -204,4 +204,46 @@ describe Typedeaf do
       end
     end
   end
+
+
+  context 'defining class methods' do
+    context 'using class_define' do
+      before :each do
+        klass.class_eval do
+          class_define :log do
+            'hello rspec'
+          end
+        end
+      end
+
+      it { should respond_to :log }
+      it 'should return the right value' do
+        expect(klass.log).to eql 'hello rspec'
+      end
+    end
+
+    context 'using class_future' do
+      before :each do
+        klass.class_eval do
+          class_future :log do
+            'hello rspec'
+          end
+        end
+      end
+
+      it { should respond_to :log }
+    end
+
+    context 'using class_promise' do
+      before :each do
+        klass.class_eval do
+          class_promise :log do
+            'hello rspec'
+          end
+        end
+      end
+
+      it { should respond_to :log }
+    end
+  end
 end

@@ -9,15 +9,28 @@ module Typedeaf
       return Typedeaf::Arguments::DefaultArgument.new(value, *types)
     end
 
-    def promise(method_sym, params={}, &block)
-      future(method_sym, params, primitive=Concurrent::Promise, &block)
+    def promise(method_sym,
+                params={},
+                method_builder=:define_method,
+                &block)
+
+      future(method_sym,
+             params,
+             method_builder,
+             primitive=Concurrent::Promise,
+             &block)
     end
 
-    def future(method_sym, params={}, primitive=Concurrent::Future, &block)
+    def future(method_sym,
+               params={},
+               method_builder=:define_method,
+               primitive=Concurrent::Future,
+               &block)
+
       __typedeaf_validate_body_for(method_sym, block)
       __typedeaf_method_parameters__[method_sym] = params
 
-      define_method(method_sym) do |*args, &blk|
+      send(method_builder, method_sym) do |*args, &blk|
         __typedeaf_handle_nested_block(params, args, blk)
         __typedeaf_handle_default_parameters(params, args)
         __typedeaf_validate_positionals(params, args)
@@ -38,12 +51,12 @@ module Typedeaf
       return self
     end
 
-    def define(method_sym, params={}, &block)
+    def define(method_sym, params={}, method_builder=:define_method, &block)
       params = params.freeze
       __typedeaf_validate_body_for(method_sym, block)
       __typedeaf_method_parameters__[method_sym] = params
 
-      define_method(method_sym) do |*args, &blk|
+      send(method_builder, method_sym) do |*args, &blk|
         # Optimization, if we're a parameter-less method, just pass right
         # through without any checks whatsoever
         if params.empty?
@@ -65,6 +78,18 @@ module Typedeaf
       end
 
       return self
+    end
+
+    def class_define(method_sym, params={}, &block)
+      define(method_sym, params, :define_singleton_method, &block)
+    end
+
+    def class_future(method_sym, params={}, &block)
+      future(method_sym, params, :define_singleton_method, &block)
+    end
+
+    def class_promise(method_sym, params={}, &block)
+      promise(method_sym, params, :define_singleton_method, &block)
     end
 
     def __typedeaf_method_parameters__
